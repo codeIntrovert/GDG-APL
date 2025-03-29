@@ -1,8 +1,8 @@
-import pyttsx3
 import speech_recognition as sr
 from google import genai
 from google.genai import types
 import keys
+from lib.lib_functions import speak
 # Initialize Google Gemini API
 client = genai.Client(api_key=keys.load_key())
 model_name = "gemini-2.0-flash"
@@ -20,13 +20,10 @@ generate_content_config = types.GenerateContentConfig(
 
 chat_history = []
 
-engine = pyttsx3.init()
-engine.setProperty("rate", 170)
+# Initialize speech recognition
 recognizer = sr.Recognizer()
 
-def speak(text):
-    engine.say(text)
-    engine.runAndWait()
+
 
 def listen():
     """
