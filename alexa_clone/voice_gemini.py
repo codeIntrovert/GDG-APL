@@ -2,7 +2,7 @@ import speech_recognition as sr
 from google import genai
 from google.genai import types
 import keys
-from lib.lib_functions import speak
+from library.lib_functions import speak
 # Initialize Google Gemini API
 client = genai.Client(api_key=keys.load_key())
 model_name = "gemini-2.0-flash"
