@@ -6,7 +6,8 @@ import wave
 from google import genai
 from google.genai import types
 import keys
-# Load Whisper Model (Use "tiny.en" for speed, "base.en" for better accuracy)
+
+# Load Whisper Model
 model = whisper.load_model("tiny.en")
 
 # Initialize Google Gemini API
@@ -20,15 +21,16 @@ generate_content_config = types.GenerateContentConfig(
     max_output_tokens=8192,
     response_mime_type="text/plain",
     system_instruction=[
-        types.Part.from_text(text="You are a helpful assistant. Motivate users to do good.")
+        types.Part.from_text(text="Analyze the given text and provide insights based on these 7 parameters. Each parameter must not exceed 20 words: \n" 
+                             "1. MOOD: Overall emotional state (happy, sad, neutral, etc.).\n" 
+                             "2. TONE: Expressed emotion (calm, aggressive, frustrated, excited, etc.).\n" 
+                             "3. CRITICALITY: Urgency or seriousness (low, moderate, high).\n" 
+                             "4. LOUDNESS/AGGRESSIVENESS: Voice intensity and aggression cues.\n" 
+                             "5. THEMES: Key topics or subjects detected.\n" 
+                             "6. KEYWORDS: Important words or phrases.\n" 
+                             "7. CHANGES IN MOOD: Any noticeable emotional shifts.")
     ],
 )
-
-chat_history = []
-
-# Initialize Text-to-Speech
-engine = pyttsx3.init()
-engine.setProperty("rate", 170)
 
 # Audio Recording Settings
 SAMPLE_RATE = 16000  # Standard for Whisper
@@ -41,8 +43,7 @@ def record_audio():
     audio_data = sd.rec(int(DURATION * SAMPLE_RATE), samplerate=SAMPLE_RATE, channels=1, dtype=np.int16)
     sd.wait()
     print("✅ Recording complete. Processing...")
-
-    # Save audio as WAV file
+    
     with wave.open(FILENAME, "wb") as wf:
         wf.setnchannels(1)
         wf.setsampwidth(2)
@@ -56,44 +57,32 @@ def transcribe_audio():
     print("You:", text)
     return text if text else None
 
-def speak(text):
-    """Speaks the AI response quickly."""
-    engine.say(text)
-    engine.runAndWait()
+def analyze_sentiment(text):
+    """Sends transcribed text to Gemini for sentiment analysis."""
+    print("Analyzing sentiment...")
+    chat_history = [types.Content(role="user", parts=[types.Part.from_text(text=text)])]
+    
+    ai_response = ""
+    for chunk in client.models.generate_content_stream(
+        model=model_name, contents=chat_history, config=generate_content_config
+    ):
+       # print(chunk.text, end="", flush=True)
+        ai_response += chunk.text
+    
+    print("\n")
+    return ai_response
 
-def chat():
-    """Continuously listens and responds with minimal delay."""
-    while True:
-        record_audio()
-        user_input = transcribe_audio()
-        
-        if not user_input:
-            print("❌ No voice detected, try again.")
-            continue
-
-        if user_input.lower() in ["exit", "quit", "bye"]:
-            print("AI: Goodbye! Have a great day!")
-            speak("Goodbye! Have a great day!")
-            break
-
-        # Append user input to chat history
-        chat_history.append(types.Content(role="user", parts=[types.Part.from_text(text=user_input)]))
-
-        # Generate AI response
-        print("AI:", end=" ", flush=True)
-        ai_response = ""
-        
-        for chunk in client.models.generate_content_stream(
-            model=model_name, contents=chat_history, config=generate_content_config
-        ):
-            print(chunk.text, end="", flush=True)
-            ai_response += chunk.text
-
-        print("\n")
-        speak(ai_response)
-
-        # Append AI response to chat history
-        chat_history.append(types.Content(role="model", parts=[types.Part.from_text(text=ai_response)]))
+def sentiment_analysis():
+    """Records, transcribes, and analyzes sentiment."""
+    record_audio()
+    user_input = transcribe_audio()
+    
+    if not user_input:
+        print("❌ No voice detected, try again.")
+        return
+    
+    analysis = analyze_sentiment(user_input)
+    print("Sentiment Analysis:\n", analysis)
 
 if __name__ == "__main__":
-    chat()
+    sentiment_analysis()
