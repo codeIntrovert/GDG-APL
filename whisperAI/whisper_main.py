@@ -1,4 +1,4 @@
-import pyttsx3
+from flask import Flask, render_template, request, jsonify
 import sounddevice as sd
 import numpy as np
 import whisper
@@ -6,6 +6,8 @@ import wave
 from google import genai
 from google.genai import types
 import keys
+
+app = Flask(__name__)
 
 # Load Whisper Model
 model = whisper.load_model("tiny.en")
@@ -34,55 +36,49 @@ generate_content_config = types.GenerateContentConfig(
 
 # Audio Recording Settings
 SAMPLE_RATE = 16000  # Standard for Whisper
-DURATION = 30  # 30 seconds max input
-FILENAME = "input.wav"
+DURATION = 10  # Shortened for usability
+FILENAME = "static/input.wav"
 
 def record_audio():
-    """Records audio for 30 seconds and saves it to a file."""
-    print("\n🎤 Recording... Speak now (30 sec max)")
+    """Records audio for 10 seconds and saves it to a file."""
     audio_data = sd.rec(int(DURATION * SAMPLE_RATE), samplerate=SAMPLE_RATE, channels=1, dtype=np.int16)
     sd.wait()
-    print("✅ Recording complete. Processing...")
-    
     with wave.open(FILENAME, "wb") as wf:
         wf.setnchannels(1)
         wf.setsampwidth(2)
         wf.setframerate(SAMPLE_RATE)
         wf.writeframes(audio_data.tobytes())
-
+    print("Recording saved to", FILENAME)
 def transcribe_audio():
     """Uses Whisper AI to transcribe recorded audio."""
     result = model.transcribe(FILENAME)
-    text = result["text"].strip()
-    print("You:", text)
-    return text if text else None
+    return result["text"].strip()
 
 def analyze_sentiment(text):
     """Sends transcribed text to Gemini for sentiment analysis."""
-    print("Analyzing sentiment...")
     chat_history = [types.Content(role="user", parts=[types.Part.from_text(text=text)])]
     
     ai_response = ""
     for chunk in client.models.generate_content_stream(
         model=model_name, contents=chat_history, config=generate_content_config
     ):
-       # print(chunk.text, end="", flush=True)
         ai_response += chunk.text
     
-    print("\n")
     return ai_response
 
-def sentiment_analysis():
-    """Records, transcribes, and analyzes sentiment."""
+@app.route('/')
+def index():
+    return render_template("index.html")
+
+@app.route('/process', methods=['POST'])
+def process():
     record_audio()
-    user_input = transcribe_audio()
+    transcription = transcribe_audio()
+    if not transcription:
+        return jsonify({"error": "No voice detected, try again."})
     
-    if not user_input:
-        print("❌ No voice detected, try again.")
-        return
-    
-    analysis = analyze_sentiment(user_input)
-    print("Sentiment Analysis:\n", analysis)
+    analysis = analyze_sentiment(transcription)
+    return jsonify({"transcription": transcription, "analysis": analysis})
 
 if __name__ == "__main__":
-    sentiment_analysis()
+    app.run(debug=True)

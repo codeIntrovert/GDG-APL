@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Sentiment Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        #output {
+            margin-top: 20px;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Voice Sentiment Analysis</h1>
+    <button onclick="analyzeVoice()">🎤 Record & Analyze</button>
+    <p id="status"></p>
+    <h2>Transcription:</h2>
+    <p id="transcription"></p>
+    <h2>Analysis:</h2>
+    <p id="analysis"></p>
+
+    <script>
+        function analyzeVoice() {
+            document.getElementById("status").innerText = "Recording... Please speak now.";
+            fetch("/process", { method: "POST" })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        document.getElementById("status").innerText = "Error: " + data.error;
+                    } else {
+                        document.getElementById("status").innerText = "Analysis complete!";
+                        document.getElementById("transcription").innerText = data.transcription;
+                        document.getElementById("analysis").innerText = data.analysis;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("status").innerText = "An error occurred.";
+                    console.error("Error:", error);
+                });
+        }
+    </script>
+</body>
+
+</html>
