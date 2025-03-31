@@ -36,7 +36,7 @@ generate_content_config = types.GenerateContentConfig(
 
 # Audio Recording Settings
 SAMPLE_RATE = 16000  # Standard for Whisper
-DURATION = 10  # Shortened for usability
+DURATION = 60  # Shortened for usability
 FILENAME = "static/input.wav"
 
 def record_audio():
