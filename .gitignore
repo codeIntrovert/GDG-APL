@@ -170,6 +170,10 @@ poetry.toml
 # ruff
 .ruff_cache/
 
+# audio
+*.wav
+*.mp3
+
 # LSP config files
 pyrightconfig.json
 
