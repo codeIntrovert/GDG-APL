@@ -2,13 +2,14 @@
 
 This project utilizes **OpenAI’s Whisper** for **speech recognition** and applies **sentiment analysis** on transcribed text. Whisper is a powerful automatic speech recognition (ASR) system capable of transcribing and understanding audio input with high accuracy.
 
-## **Features**
+## **Skill Tags**
 
-✅ Convert speech to text using OpenAI’s Whisper  
-✅ Perform sentiment analysis on transcribed text  
-✅ Supports multiple languages  
-✅ Easy to set up and run  
-✅ Python-based with minimal modifications required
+Python, APIs, Google Gemini API, AI, Voice Recognition, Speech-to-Text, Text-to-Speech (TTS), Voice Assistant, Automation, Speech Synthesis
+
+## **Relevant Links**
+
+Visual Studio Code: https://code.visualstudio.com/
+Python: https://www.python.org/downloads/
 
 ---
 
@@ -47,8 +48,8 @@ brew install ffmpeg
 Download the project from GitHub:
 
 ```bash
-git clone https://github.com/openai/whisper.git
-cd whisper
+git clone https://github.com/codeIntrovert/GDG-APL
+cd ./GDG-APL/
 ```
 
 ### **3. Set Up Python Environment**
@@ -74,6 +75,14 @@ Activate the virtual environment:
 
 ```bash
 pip install -r requirements.txt
+```
+
+### **5. Set Up Your API Key**
+
+To securely store your API key, create a `.env` file in the project directory and add:
+
+```plaintext
+API_KEY=your_gemini_api_key_here
 ```
 
 ---
