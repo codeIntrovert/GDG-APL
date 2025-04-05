@@ -10,7 +10,8 @@ Python, APIs, Google Gemini API, AI, Voice Recognition, Speech-to-Text, Text-to-
 
 Visual Studio Code: https://code.visualstudio.com/
 Python: https://www.python.org/downloads/
-
+Homebrew: 
+https://brew.sh/
 ---
 
 ## **Getting Started**
