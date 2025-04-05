@@ -4,14 +4,15 @@ This project utilizes **OpenAI’s Whisper** for **speech recognition** and appl
 
 ## **Skill Tags**
 
-Python, APIs, Google Gemini API, AI, Voice Recognition, Speech-to-Text, Text-to-Speech (TTS), Voice Assistant, Automation, Speech Synthesis
+Python, OpenAI Whisper, Speech Recognition, Sentiment Analysis, Natural Language Processing (NLP), Deep Learning, Audio Processing, Automation, Machine Learning, Voice-to-Text, Real-time Transcription, Command Line Tools, AI
 
 ## **Relevant Links**
 
 Visual Studio Code: https://code.visualstudio.com/
 Python: https://www.python.org/downloads/
-Homebrew: 
+Homebrew:
 https://brew.sh/
+
 ---
 
 ## **Getting Started**
